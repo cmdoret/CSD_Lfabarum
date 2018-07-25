@@ -2,7 +2,7 @@
 
 In the following instructions, the root folder is consedered to be the git repository. That is the folder which contains src.
 
-0. run `git clone https://github.com/cmdoret/CSD_lfabarum.git/ and create a data subfolder `data` inside the newly created folder
+0. Run `git clone https://github.com/cmdoret/CSD_lfabarum.git/` and create a data subfolder `data` inside the newly created folder
 1. Replace informations in `template_data/individuals.tsv` and `template_data/popmap.tsv` by actual values and move them into `data`
 2. Move your fastq files to `data/processed`, respecting example naming scheme
 3. Insert genome fasta file in `data/ref_genome`
