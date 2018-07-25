@@ -2,6 +2,7 @@
 # Genetic basis of sex determination in a parasitoid wasp species
 
 ### Cyril Matthey-Doret, Casper Van der Kooi and Tanja Schwander
+
 ---
 In this project, we use restriction-site associated DNA-sequencing (RAD-seq) and build a custom pipeline to locate and identify the complementary sex determination (CSD) locus/loci in the parasitoid wasp species _Lysiphlebus fabarum_. This repository contains a pipeline to map the reads using BWA and build loci using the different components of STACKS with optimal parameters. It was designed to run on a distributed High Performance Computing (HPC) environment with LSF but can also be ran on a personal machine.
 
@@ -41,16 +42,17 @@ To run the STACKS pipeline with new data in the form of demultiplexed, trimmed s
 5. Type `make -B` to run the pipeline again without haploids.
 
 ### Dependencies:
+
+#### Core:
+
+These dependencies are required to run the main analysis. This include the RADseq pipeline and association mapping.
+
 * [FastQC 0.11.5](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/): Quality control of sequencing data.
 * [BWA 0.7.2](http://bio-bwa.sourceforge.net/)
 * [STACKS 1.48](http://catchenlab.life.illinois.edu/stacks/)
 * [SAMtools 1.3](http://samtools.sourceforge.net/)
 * [VCFtools 0.1.13](https://vcftools.github.io/)
 * [BEDtools 2.25](http://bedtools.readthedocs.io/)
-* [DeepTools 2.4.2](http://deeptools.readthedocs.io/)
-* [CuffLinks 2.2.1](http://cole-trapnell-lab.github.io/cufflinks/)
-* [ncbi-BLAST+](https://blast.ncbi.nlm.nih.gov/Blast.cgi)
-* [MCScanX](http://chibba.pgml.uga.edu/mcscan2/)
 * [Trimmomatic](http://usadellab.org/cms/?page=trimmomatic)
 * [R 3.3.x](https://www.r-project.org/)
   + [readr 1.1.1](https://cran.r-project.org/web/packages/readr/README.html)
@@ -71,6 +73,16 @@ To run the STACKS pipeline with new data in the form of demultiplexed, trimmed s
   + [matplotlib 1.5](https://matplotlib.org/)
   + [biopython 1.70](http://biopython.org/)
   + [pybedtools 0.7.10](http://daler.github.io/pybedtools/)
+
+#### Optional:
+
+These tools are required only to run additional analyses.
+
+* [DeepTools 2.4.2](http://deeptools.readthedocs.io/)
+* [CuffLinks 2.2.1](http://cole-trapnell-lab.github.io/cufflinks/)
+* [ncbi-BLAST+](https://blast.ncbi.nlm.nih.gov/Blast.cgi)
+* [MCScanX](http://chibba.pgml.uga.edu/mcscan2/)
+* [circos](http://circos.ca/)
 
 ### Scripts
 
@@ -116,8 +128,3 @@ Once the `data.tar.gz` has been uncompressed, the data folder should contain the
 
 After the pipeline has been running, all intermediary and final output files will be generated and stored in their respective sub-folders inside `data`.
 
-### Flowchart
-
-Visual summary of how the pipeline works. Rectangles show operations/programs, diamonds represent data files. Red items are not included in the repository. Green fields are completed, yellow fields are still WIP.
-
-<img src="reports/lab_book/flowchart.png" width="400">
