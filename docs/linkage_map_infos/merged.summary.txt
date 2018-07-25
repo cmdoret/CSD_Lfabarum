@@ -1,0 +1,29 @@
+*** Summary for each individual map ***
+================================================
+                         o              handmade
+------------------------------------------------
+            Linkage Groups                     6
+          Markers (unique)                 1,092
+            Markers per Mb                  14.2
+             N50 Scaffolds                   122
+                 Scaffolds                   304
+   Scaffolds with 1 marker                   104
+  Scaffolds with 2 markers                    65
+  Scaffolds with 3 markers                    41
+Scaffolds with >=4 markers                    94
+               Total bases    76,733,634 (54.5%)
+------------------------------------------------
+*** Summary for consensus map ***
+============================================================================================
+                         o              Anchored              Oriented              Unplaced
+--------------------------------------------------------------------------------------------
+          Markers (unique)                 1,082                   519                    10
+            Markers per Mb                  14.4                  16.2                   0.2
+             N50 Scaffolds                   119                    51                    39
+                 Scaffolds                   296                    73                 1,402
+   Scaffolds with 1 marker                    98                     0                     6
+  Scaffolds with 2 markers                    63                    18                     2
+  Scaffolds with 3 markers                    41                     6                     0
+Scaffolds with >=4 markers                    94                    49                     0
+               Total bases    75,323,951 (53.5%)    31,999,659 (22.7%)    65,381,629 (46.5%)
+--------------------------------------------------------------------------------------------

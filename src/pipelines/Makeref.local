@@ -1,0 +1,58 @@
+include config.mk
+
+.PHONY : all
+all : $(POP)
+
+# Mapping reads with BWA
+$(MAP) : $(PROC)
+	rm -rf $@
+	mkdir -p $@
+	bash $(BWA-RAD) --mm $(MM) \
+	                --ref $(REF) \
+					--reads $(PROC) \
+                    --popmap $(DAT)/popmap.tsv \
+					--out $(MAP) \
+					--local yes
+
+# Building stacks from reference with Pstacks
+$(PSTACK) : $(MAP)
+	bash $(P-SRC) --map $< \
+                  --m $(M) \
+				  --out $@ \
+				  --log $(LOG) \
+    			  --local yes
+
+# Building loci catalog with Cstacks
+$(CSTACK): $(PSTACK)
+	rm -fr $@;
+	mkdir -p $@;
+	bash $(C-SRC) --pst $< \
+	              --cst $@ \
+				  --lm $(LM) \
+				  --local yes
+
+# Running sstacks and populations
+$(POP) : $(S-SRC) $(POP-SRC) $(CSTACK)
+
+	bash $(S-SRC) --in $(PSTACK) \
+                --cat $(CSTACK) \
+				--out $(SSTACK) \
+				--log $(LOG) \
+				--local yes
+	# Organizing p/c/s stacks files into a common folder
+	bash $(GR-SRC) $(PSTACK) $(CSTACK) $(SSTACK)
+
+	rm -rf $@
+	mkdir -p $@
+	# Erasing logs from previous run
+	rm -rf $(LOG)/populations
+	mkdir -p $(LOG)/populations
+	# Changing parameters directly in the file
+	
+	bash $(POP-SRC) --sst $(SSTACK) \
+	                --thresh $(THRESH) \
+					--md $(D) \
+					--r $(R) \
+					--out $@ \
+					--log $(LOG) \
+					--local yes
