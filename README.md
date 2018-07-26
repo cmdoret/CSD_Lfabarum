@@ -47,6 +47,8 @@ To run the STACKS pipeline with new data in the form of demultiplexed, trimmed s
 
 These dependencies are required to run the main analysis. This include the RADseq pipeline and association mapping.
 
+The easiest and recommended way to install the correct versions of python and R packages is to install [Anaconda](https://www.anaconda.com/download) and [setup an environment](https://conda.io/docs/user-guide/tasks/manage-environments.html).
+
 * [FastQC 0.11.5](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/): Quality control of sequencing data.
 * [BWA 0.7.15](http://bio-bwa.sourceforge.net/)
 * [STACKS 1.48](http://catchenlab.life.illinois.edu/stacks/)
@@ -67,6 +69,7 @@ These dependencies are required to run the main analysis. This include the RADse
   + [RcppRoll 0.3.0](https://cran.r-project.org/web/packages/RcppRoll/)
   + [viridis 0.5.1](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html)
   + [optparse 1.6.0](https://cran.r-project.org/web/packages/optparse)
+  + [gridExtra 2.3](https://cran.r-project.org/web/packages/gridExtra/index.html)
 * [Python 2.7.x](https://www.python.org/)
   + [numpy 1.11](http://www.numpy.org/)
   + [pandas 0.19](http://pandas.pydata.org/)
