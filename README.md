@@ -126,5 +126,11 @@ Once the `data.tar.gz` has been uncompressed, the data folder should contain the
 * `ref_genome`: This folder contains the reference genome.
 * `wgs`: contains the raw reads from whole genome sequencing of a wild population of _L. fabarum_ and `wgs_samples.tsv`, a list of sample names with their sex.
 
-After the pipeline has been running, all intermediary and final output files will be generated and stored in their respective sub-folders inside `data`.
+After the pipeline has been running, all intermediary and final output files will be generated and stored in their respective sub-folders inside `data`. Notable output files include:
 
+* Association mapping hits: `data/assoc_mapping/case_control/case_control_hits.tsv`
+* STACKS populations output files: `data/popula`
+* Locations of centromeres: `data/assoc_mapping/centro`
+* List of samples including ploidy and coverage statistics: `data/ploidy/thresholds/fixed.tsv`
+* Nucleotidic diversity stats from WGS samples: `data/wgs_wild/stats/`
+* List of SNPs with centiMorgan information extracted from the linkage map: `data/linkage_map/bp2cm/bp2cm_csd_snps.tsv`
