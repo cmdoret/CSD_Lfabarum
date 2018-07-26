@@ -43,11 +43,12 @@ To run the STACKS pipeline with new data in the form of demultiplexed, trimmed s
 
 ### Dependencies:
 
+The easiest and recommended way to install the correct versions of python and R packages is to install [Anaconda](https://www.anaconda.com/download) and [setup an environment](https://conda.io/docs/user-guide/tasks/manage-environments.html). For convenience, a YAML environment file is provided in the `docs` folder and you can setup the conda environment directly from it using `conda env create -f docs/csd_env_conda.yml`. You can then activate it using `source activate csd_env` and all python and R dependencies should be enabled.
+
 #### Core:
 
 These dependencies are required to run the main analysis. This include the RADseq pipeline and association mapping.
 
-The easiest and recommended way to install the correct versions of python and R packages is to install [Anaconda](https://www.anaconda.com/download) and [setup an environment](https://conda.io/docs/user-guide/tasks/manage-environments.html).
 
 * [FastQC 0.11.5](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/): Quality control of sequencing data.
 * [BWA 0.7.15](http://bio-bwa.sourceforge.net/)
@@ -56,25 +57,25 @@ The easiest and recommended way to install the correct versions of python and R 
 * [VCFtools 0.1.15](https://vcftools.github.io/)
 * [BEDtools 2.26](http://bedtools.readthedocs.io/)
 * [Trimmomatic 0.36](http://usadellab.org/cms/?page=trimmomatic)
-* [R 3.4.2](https://www.r-project.org/)
+* [R 3.4.3](https://www.r-project.org/)
   + [readr 1.1.1](https://cran.r-project.org/web/packages/readr/README.html)
   + [tidyr 0.8.1](https://cran.r-project.org/web/packages/tidyr/index.html)
-  + [dplyr 0.7.6](https://www.rdocumentation.org/packages/dplyr/versions/0.7.2)
+  + [dplyr 0.7.4](https://www.rdocumentation.org/packages/dplyr/versions/0.7.2)
   + [ggplot2 3.0.0](http://ggplot2.org/)
-  + [ggjoy 0.3.0](https://cran.r-project.org/web/packages/ggjoy/index.html)
-  + [stringr 1.3.1](https://cran.r-project.org/web/packages/stringr/index.html)
-  + [reshape2 1.4.2](https://cran.r-project.org/web/packages/reshape2/index.html)
+  + [ggrepel 0.8.0](https://cran.r-project.org/web/packages/ggrepel/index.html)
+  + [stringr 1.2.0](https://cran.r-project.org/web/packages/stringr/index.html)
+  + [reshape2 1.4.3](https://cran.r-project.org/web/packages/reshape2/index.html)
   + [zoo 1.8.3](https://cran.r-project.org/web/packages/zoo/index.html)
   + [Rcpp](https://cran.r-project.org/web/packages/Rcpp/)
   + [RcppRoll 0.3.0](https://cran.r-project.org/web/packages/RcppRoll/)
-  + [viridis 0.5.1](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html)
+  + [viridis 0.4.0](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html)
   + [optparse 1.6.0](https://cran.r-project.org/web/packages/optparse)
   + [gridExtra 2.3](https://cran.r-project.org/web/packages/gridExtra/index.html)
 * [Python 2.7.x](https://www.python.org/)
   + [numpy 1.11](http://www.numpy.org/)
   + [pandas 0.19](http://pandas.pydata.org/)
   + [matplotlib 1.5](https://matplotlib.org/)
-  + [biopython 1.70](http://biopython.org/)
+  + [biopython 1.72](http://biopython.org/)
   + [pybedtools 0.7.10](http://daler.github.io/pybedtools/)
 
 #### Optional:
