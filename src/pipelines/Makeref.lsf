@@ -8,32 +8,32 @@ $(MAP) : $(PROC)
 	rm -rf $@
 	mkdir -p $@
 	bash $(BWA-RAD) --mm $(MM) \
-	                --ref $(REF) \
+					--ref $(REF) \
 					--reads $(PROC) \
-                    --popmap $(DAT)/popmap.tsv \
+					--popmap $(DAT)/popmap.tsv \
 					--out $(MAP)
 
 # Building stacks from reference with Pstacks
 $(PSTACK) : $(MAP)
 	bash $(P-SRC) --map $< \
-	              --m $(M) \
-	              --out $@ \
-								--log $(LOG)
+				--m $(M) \
+				--out $@ \
+				--log $(LOG)
 
 # Building loci catalog with Cstacks
 $(CSTACK): $(PSTACK)
 	rm -fr $@;
 	mkdir -p $@;
 	bash $(C-SRC) --pst $< \
-	              --cst $@ \
-								--lm $(LM)
+				--cst $@ \
+				--lm $(LM)
 
 # Running Sstacks and populations
 $(POP) : $(S-SRC) $(POP-SRC) $(CSTACK)
 	bash $(S-SRC) --in $(PSTACK) \
-	              --cat $(CSTACK) \
-    			  --out $(SSTACK) \
-				  --log $(LOG)
+				--cat $(CSTACK) \
+				--out $(SSTACK) \
+				--log $(LOG)
 	# Organizing p/c/s stacks files into a common folder
 	bash $(GR-SRC) $(PSTACK) $(CSTACK) $(SSTACK)
 
@@ -43,8 +43,8 @@ $(POP) : $(S-SRC) $(POP-SRC) $(CSTACK)
 	rm -rf $(LOG)/populations
 	mkdir -p $(LOG)/populations
 	bash $(POP-SRC) --sst $(SSTACK) \
-					--pom $(DAT)/popmap.tsv
-	                --thresh $(THRESH) \
+					--pom $(DAT)/popmap.tsv \
+					--thresh $(THRESH) \
 					--md $(D) \
 					--r $(R) \
 					--out $@ \

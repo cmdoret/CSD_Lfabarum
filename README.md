@@ -52,7 +52,7 @@ These dependencies are required to run the main analysis. This include the RADse
 
 * [FastQC 0.11.5](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/): Quality control of sequencing data.
 * [BWA 0.7.15](http://bio-bwa.sourceforge.net/)
-* [STACKS 1.48](http://catchenlab.life.illinois.edu/stacks/)
+* [STACKS 1.48](http://catchenlab.life.illinois.edu/stacks/) ([Download link](http://catchenlab.life.illinois.edu/stacks/source/stacks-1.48.tar.gz))
 * [SAMtools 1.4](http://samtools.sourceforge.net/)
 * [VCFtools 0.1.15](https://vcftools.github.io/)
 * [BEDtools 2.26](http://bedtools.readthedocs.io/)
