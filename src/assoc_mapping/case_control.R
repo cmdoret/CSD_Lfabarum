@@ -6,9 +6,10 @@
 
 #======== LOAD DATA =========####
 # Loading libraries for data processing and visualisation
-packs <- c("dplyr","readr","ggplot2","gridExtra","viridis", "ggrepel")
+packs <- c("dplyr","readr","ggplot2","gridExtra","viridis")
 packs <- suppressPackageStartupMessages(sapply(packs, library, character.only=T, quietly=T))
 in_args <- commandArgs(trailingOnly = T)
+#library("ggrepel")
 signif <- 0.00001
 # Input table with proportion of homozygous individuals
 hom_path <-in_args[1]
@@ -109,7 +110,7 @@ ggplot(data=viz_cont, aes(x=(cumSize+BP)/zoom, y=fisher, col=as.factor(sig_chr))
   geom_rect(data=rects, inherit.aes = F, aes(xmin=start/zoom, xmax=end/zoom, ymin=0, ymax=10), fill="grey80", alpha=0.4) +
   geom_point() +
   geom_hline(aes(yintercept=-log10(signif)), lty=2, col='red') + 
-  geom_text_repel(aes(label=show_name),point.padding=2) +
+  #geom_text_repel(aes(label=show_name),point.padding=2) +
   xlab("Genomic position [Mb]") + ylab("-log10 p-value") + 
   ggtitle("Case-control association test for CSD: Unordered contigs") + 
   ylim(c(0,10)) + theme_bw() + guides(col=F)
