@@ -11,6 +11,7 @@ In this project, we use restriction-site associated DNA-sequencing (RAD-seq) and
 ### Run the pipeline
 
 To run the pipeline with the data provided:
+
 1. Download or clone this repository.
 2. Download the `data` archive (not available yet) into the main folder
 3. ```cd``` to the main folder
@@ -30,15 +31,16 @@ To run the pipeline with the data provided:
 ### Use different input data
 
 To run the STACKS pipeline with new data in the form of demultiplexed, trimmed single end reads in compressed fastq files (.fq.gz):
+
 1. Describe your samples by writing 2 files named `popmap.tsv` and `individuals.tsv`, respectively. The structure of the `popmap.tsv` file is described on the [official STACKS website](http://catchenlab.life.illinois.edu/stacks/manual/) (here, populations should be the sex of individuals). The `individuals.tsv` file is a tab delimited text file with 4 columns with the following headers __included__:
-* Name: The names of samples. This should be the name of their data files (e.g. if the sample name is SAMPLE1, the corresponding reads file should be named SAMPLE1.fq.gz).
-* Sex: F for females and M for males.
-* Family: Clutches to which the individual belongs. These can be any combination of alphanumeric characters.
-* Generation: Useful if there are mothers and offspring. Values should be F3 for mothers and F4 for offspring.
+    + Name: The names of samples. This should be the name of their data files (e.g. if the sample name is SAMPLE1, the corresponding reads file should be named SAMPLE1.fq.gz).
+    + Sex: F for females and M for males.
+    + Family: Clutches to which the individual belongs. These can be any combination of alphanumeric characters.
+    + Generation: Useful if there are mothers and offspring. Values should be F3 for mothers and F4 for offspring.
 2. Create an empty folder named data and place the 2 files inside. This folder needs to be located inside the same directory as src.
 3. Place your (trimmed, demultiplexed) reads in a subfolder of data named `processed` and your reference genome in a subfolder named `ref_genome`. You will also need to edit the `REF` path in `config.mk` accordingly. If you wish to use different folder names, just edit the corresponding paths in `config.mk`.
 
-4. Set the variable `D` in `config.mk` to 25 (minimum locus depth for STACKS populations). Type `make` in the command line (or `make `ref_local` if running on a local machine). Once the pipeline has finished running, set the variable `D` back to 5 and type `make ploidy` to infer ploidy from the homozygosity of variant sites. Note the threshold selected to define ploidy is adapted to the dataset presented here. You might want to define a threshold yourself by inspecting the distribution of homozygosity (HOM variable) in `data/ploidy/thresholds/fixed.tsv` and the variable `HOM_PLOID` in `config.mk` to this value. Once you have modified the threshold, run `make ploidy` again to update the ploidy classification with the new threshold.
+4. Set the variable `D` in `config.mk` to 25 (minimum locus depth for STACKS populations). Type `make` in the command line (or `make ref_local` if running on a local machine). Once the pipeline has finished running, set the variable `D` back to 5 and type `make ploidy` to infer ploidy from the homozygosity of variant sites. Note the threshold selected to define ploidy is adapted to the dataset presented here. You might want to define a threshold yourself by inspecting the distribution of homozygosity (HOM variable) in `data/ploidy/thresholds/fixed.tsv` and the variable `HOM_PLOID` in `config.mk` to this value. Once you have modified the threshold, run `make ploidy` again to update the ploidy classification with the new threshold.
 5. Type `make -B` to run the pipeline again without haploids.
 
 ### Dependencies:
