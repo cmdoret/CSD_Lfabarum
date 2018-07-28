@@ -45,7 +45,7 @@ To run the STACKS pipeline with new data in the form of demultiplexed, trimmed s
 
 ### Dependencies:
 
-The easiest and recommended way to install the correct versions of python and R packages is to install [Anaconda](https://www.anaconda.com/download) and [setup an environment](https://conda.io/docs/user-guide/tasks/manage-environments.html). For convenience, a YAML environment file is provided in the `docs` folder and you can setup the conda environment directly from it using `conda env create -f docs/csd_env_conda.yml`. You can then activate it using `source activate csd_env` and all python and R dependencies should be enabled.
+The easiest and recommended way to install the correct versions of python and R packages is to install [Anaconda](https://www.anaconda.com/download) for python 2 and [setup an environment](https://conda.io/docs/user-guide/tasks/manage-environments.html). For convenience, a YAML environment file is provided in the `docs` folder and you can setup the conda environment directly from it using `conda env create -f docs/csd_env_conda.yml`. You can then activate it using `source activate csd_env` and all python and R dependencies should be enabled.
 
 #### Core:
 

@@ -68,5 +68,5 @@ CORRESP=$(DAT)/annotations/corresp_gff.csv
 # Linkage map
 LINKMAP=$(DAT)/linkage_map/
 # WGS data (used for PI diversity)
-WGS=$(DAT)/wgs_wild/
+WGS=$(DAT)/wgs/
 MISC=src/misc
