@@ -1,4 +1,4 @@
-name: csd
+name: csd_env
 channels:
   - conda-forge
   - defaults
