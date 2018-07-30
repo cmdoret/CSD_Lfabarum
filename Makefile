@@ -145,16 +145,16 @@ wgs_qc : $(WGS)/mapped $(WGS)/raw
 wgs_wild : $(CORRESP) $(SIZES) $(WGS)/variant/hap.wild.matrix
 	# Compute PI diversity in sliding windows
 	Rscript src/wgs_wild/compute_PI.R \
-		-i $(WGS)/variant/hap.wild.matrix.txt \
-		-o $(WGS)/stats/win_w100_t10_PI.tsv \
-		-m 'window' \
+		--in $(WGS)/variant/hap.wild.matrix.txt \
+		--out $(WGS)/stats/win_w100_t10_PI.tsv \
+		--mode 'window' \
 		--step_size 10 \
 		--win_size 100
 	# Compute PI diversity per site
 	Rscript src/wgs_wild/compute_PI.R
-		-i $(WGS)/variant/hap.wild.matrix.txt \
-		-o $(WGS)/stats/sites_PI.tsv \
-		-m 'site'
+		--in $(WGS)/variant/hap.wild.matrix.txt \
+		--out $(WGS)/stats/sites_PI.tsv \
+		--mode 'site'
 
 ####################
 #### MISC RULES ####

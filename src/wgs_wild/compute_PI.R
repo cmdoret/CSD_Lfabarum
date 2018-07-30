@@ -5,42 +5,37 @@
 # 23.03.2018
 
 # Load libraries ####
-packs <- c("dplyr","readr","Rcpp","optparse", "RcppRoll")
+packs <- c("dplyr","readr","Rcpp","argparse", "RcppRoll")
 packs <- sapply(packs, function(x) suppressPackageStartupMessages(library(x, quietly=T, character.only=T)))
 
+
 # Parse CL arguments ####
-option_list = list(
-  make_option(c("-i", "--in"), 
-              type="character", 
-              default=NA, 
-              help="Input SNP matrix.", 
-              metavar="character"),
-  make_option(c("-o", "--out"), 
-              type="character", 
-              default=NA, 
-              help="Output file where to store PI values.", 
-              metavar="character"),
-  make_option(c("-m", "--mode"), 
-              type="character", 
-              default="site", 
-              help="Mode: Compute PI by 'window' or by 'site' [default %default]."),
-  make_option(c("-s","--sites"), 
-              type="character", 
-              default=NA, 
-              help="File containing a list of tab-separated chromosomes and positions (in base pairs) at which PI should be computed."),
-  make_option(c("-w","--win_size"), 
-              type="integer", 
-              default=10000, 
-              help="Size of windows in which PI is computed, in base pairs [default %default]."), 
-  make_option(c("-t","--step_size"), 
-              type="integer", 
-              default=100, 
-              help="Step between windows in which PI is computed, in base pairs [default %default].")
-)
+parser <- ArgumentParser(description='Compute PI nucleotidic diversity from a SNP matrix, per site or in rolling windows.')
 
-opt_parser = OptionParser(option_list=option_list);
-opt = parse_args(opt_parser);
-
+parser$add_argument("-i", "--in", 
+                 type="character", 
+                 help="Input SNP matrix.", 
+                 metavar="input_file")
+parser$add_argument("-o", "--out", 
+                 type="character", 
+                 help="Output file where to store PI values.", 
+                 metavar="output_file")
+parser$add_argument("-m", "--mode", 
+                 type="character", 
+                 default="site", 
+                 help="Mode: Compute PI by 'window' or by 'site' [default \"%(default)s\"].")
+parser$add_argument("-s", "--sites", 
+                 type="character", 
+                 help="File containing a list of tab-separated chromosomes and positions (in base pairs) at which PI should be computed.")
+parser$add_argument("-w", "--win_size", 
+                 type="integer", 
+                 default=10000, 
+                 help="Size of windows in which PI is computed, in base pairs [default \"%(default)s\"].")
+parser$add_argument("-t", "--step_size", 
+                 type="integer", 
+                 default=100, 
+                 help="Step between windows in which PI is computed, in base pairs [default \"%(default)s\"].")
+opt <-parser$parse_args()
 # Load data and handle arguments ####
 
 # check output path is provided
@@ -66,7 +61,7 @@ if (!is.na(opt$sites)){
   if(opt$mode=='window') print("Ignoring site filtering: Not enabled in window mode.")
   else {
     # Filtering sites using the file provided via --sites
-    site_tbl <- read_tsv(opt$s, col_names = F, progress = F, col_types = cols())
+    site_tbl <- read_tsv(opt$sites, col_names = F, progress = F, col_types = cols())
     snp_tbl <- snp_tbl %>% inner_join(., site_tbl,site_tbl,by=c("X1","X2"))
   }
 }
@@ -168,7 +163,7 @@ out <- data.frame()
 for(chr in unique(pull(snp_tbl, 1))){
   print(paste0("Computing PI for ", chr))
   chr_mat <- snp_mat[snp_tbl$X1==chr,]
-  if(opt$m=="window"){
+  if(opt$mode=="window"){
     # If positions are missing, add them as missing calls (easier for windows)
     full_chr <- matrix(nrow=max(snp_tbl[snp_tbl$X1==chr,2]),ncol=ncol(snp_mat))
     full_chr[snp_tbl$X2[snp_tbl$X1==chr],] <- chr_mat
@@ -180,7 +175,7 @@ for(chr in unique(pull(snp_tbl, 1))){
   }
 }
 
-print(paste0("Saving output to ", opt$o))
-if(opt$m=="window") {out_PI <- out}
+print(paste0("Saving output to ", opt$out))
+if(opt$mode=="window") {out_PI <- out}
 # Write PI values to output ####
 write_tsv(out_PI, opt$out,col_names = F)
