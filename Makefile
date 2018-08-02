@@ -151,7 +151,7 @@ wgs_wild : $(CORRESP) $(SIZES) $(WGS)/variant/hap.wild.matrix
 		--step_size 10 \
 		--win_size 100
 	# Compute PI diversity per site
-	Rscript src/wgs_wild/compute_PI.R
+	Rscript src/wgs_wild/compute_PI.R \
 		--in $(WGS)/variant/hap.wild.matrix.txt \
 		--out $(WGS)/stats/sites_PI.tsv \
 		--mode 'site'

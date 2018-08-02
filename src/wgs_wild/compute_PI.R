@@ -39,7 +39,7 @@ opt <-parser$parse_args()
 # Load data and handle arguments ####
 
 # check output path is provided
-if (!is.na(opt$out)) {
+if (length(opt$out) > 0) {
   # Loading genotype matrix. One column per haplotye, one row per SNP. Missing calls (.) as NA.
   out_path <- opt$out
 } else stop("Output path not provided. See script usage (--help)")
@@ -51,13 +51,13 @@ if (!opt$mode %in% modes)
   stop(paste0("mode must be one of '", modes,"'. See script usage (--help)", collapse = ", "))
 
 # check input file is provided
-if (!is.na(opt$i)) {
+if (length(opt$i) > 0) {
   # Loading genotype matrix. One column per haplotye, one row per SNP. Missing calls (.) as NA.
   snp_tbl <- read_tsv(opt$i, col_names = F, na = ".", progress=F, col_types = cols())
 } else stop("Input SNP matrix not provided. See script usage (--help)")
 
 # Filter sites if not in window mode
-if (!is.na(opt$sites)){
+if (length(opt$sites) > 0){
   if(opt$mode=='window') print("Ignoring site filtering: Not enabled in window mode.")
   else {
     # Filtering sites using the file provided via --sites
