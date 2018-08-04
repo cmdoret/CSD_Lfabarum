@@ -20,7 +20,7 @@ EOF
 }
 
 # Parsing CL arguments
-while getopts ":O:N:lc:h" opt; do
+while getopts ":O:N:g:lc:h" opt; do
    case $opt in
    O )  OLD_REF=${OPTARG} ;;
    N )  NEW_REF=${OPTARG} ;;
