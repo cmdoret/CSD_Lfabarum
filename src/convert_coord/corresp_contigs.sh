@@ -11,6 +11,7 @@ function usage () {
 Usage: `basename $0` -O old_ref -N new_ref -c corresp [-l] [-h]
    -O   old reference
    -N   new reference
+   -g   path to log file
    -c   output correspondance file
    -l   local run. If specified, will not use LSF bsub command
    -h   displays this help

@@ -114,7 +114,7 @@ $(RNA)/assembled/ :
 # and new (anchored) assembly
 $(CORRESP):
 	bash src/convert_coord/corresp_contigs.sh -O $(OLD-REF) \
-			-G $(LOG) \
+			-g $(LOG) \
 			-N $(REF) \
 			-c $(CORRESP) \
 			$${LOCAL:+-l} \
