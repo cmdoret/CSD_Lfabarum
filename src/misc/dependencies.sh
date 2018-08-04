@@ -16,6 +16,7 @@ module add UHTS/Aligner/bwa/0.7.15 \
            SequenceAnalysis/GenePrediction/augustus/3.2.3 \
            SequenceAnalysis/HMM-Profile/hmmer/3.1b2 \
            UHTS/Analysis/stacks/1.48 \
+           UHTS/Assembler/cufflinks/2.2.1 \
            UHTS/Analysis/trimmomatic/0.36 \
            UHTS/Analysis/HTSlib/1.6 2> /dev/null || echo "Trying to load modules locally"
 

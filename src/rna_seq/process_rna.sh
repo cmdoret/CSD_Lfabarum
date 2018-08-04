@@ -38,7 +38,7 @@ mkdir -p $OUT
 # If local run, run directly, otherwise submit using bsub
 if [ -z ${local+x} ];
 then
-  run_fun="bsub"
+  run_fun="bsub -K"
 else
   run_fun="bash"
 fi
@@ -48,12 +48,15 @@ eval "$run_fun" <<RNA
 #BSUB -J RNA_assembly
 #BSUB -q normal
 #BSUB -n 36
-#BSUB -M 32000000
+#BSUB -M 64000000
 #BSUB -R "span[ptile=36]"
-#BSUB -R "rusage[mem=32000]"
+#BSUB -R "rusage[mem=64000]"
 
 # Loading softwares
 source src/misc/dependencies.sh
+
+# Index BAM file
+samtools index -b $BAM
 
 # Generate bigwig file with coverage along genome
 bamCoverage -b $BAM -o $OUT/coverage.bw
