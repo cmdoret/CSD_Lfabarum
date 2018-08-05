@@ -166,7 +166,7 @@ wgs_wild : $(CORRESP) $(SIZES) $(WGS)/variant/hap.wild.matrix
 bp2cm:
 	# Compute coordinates of linkage map markers in new genome
 	# Compute cM/BP ratio in each inter-marker interval
-	bash src/convert_coord/bp2cm.sh -r $(OLDREF) -n $(REF) -o $(LINKMAP)/bp2cm/bp2cm.tsv \
+	bash src/convert_coord/bp2cm.sh -r $(OLD-REF) -n $(REF) -o $(LINKMAP)/bp2cm/bp2cm \
 									-m $(LINKMAP)/linkage_markers.csv
 	# Apply transformation to CSD dataset to get cM coordinates
 	bash src/convert_coord/apply_bp2cm.sh $(ASSOC)/case_control/case_control_all.tsv \

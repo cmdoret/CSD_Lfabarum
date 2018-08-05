@@ -53,7 +53,6 @@ while read -a hit; do
             # Position of SNP from start of interval
             from_start=$((bp - interv[1]))
             curr_cM=$(echo "$from_start * ${interv[3]} + $cum_cM" | bc -l)
-            echo "CURR: $curr_cM"
             echo -e "${hit[*]}\t$curr_cM" >> "$out_hits"
         else
             # SNP not found, next read will not use this interval
@@ -61,7 +60,6 @@ while read -a hit; do
             # Computing total cM in interval (cM/BP) * (end-start) 
             int_cM=$(echo "${interv[3]} * (${interv[2]} - ${interv[1]})")
             cum_cM=$(echo "$cum_cM + $int_cM" | bc -l)
-            echo "NEXT"
         fi
         echo "$cum_cM"
 
