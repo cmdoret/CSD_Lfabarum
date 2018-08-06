@@ -68,6 +68,7 @@ then
 
   bash src/convert_coord/convert_GFF_coord.sh -i "$MC_GFF" \
                                               -o "$OUT_GFF" \
+                                              -g "data/logs/" \
                                               ${PREV:+-O "$PREV"} \
                                               ${REF:+-N "$REF"} \
                                               ${CORRESP_GFF:+-c "$CORRESP_GFF"} \

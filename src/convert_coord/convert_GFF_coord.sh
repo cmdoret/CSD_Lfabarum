@@ -9,7 +9,8 @@
 function usage () {
    cat <<EOF
 Usage: `basename $0` -i input_gff -o output_gff (-c corresp_file | \
--O old -N new) [-l] [-h]
+-O old -N new) [-L] [-h]
+   -g   log file
    -i   gff file to be converted
    -o   output converted gff file
    -c   csv file for correspondance between contigs
@@ -22,10 +23,10 @@ EOF
 }
 
 # Parsing CL arguments
-while getopts ":i:o:c:O:N:lh" opt; do
+while getopts ":g:i:o:c:O:N:lh" opt; do
    case $opt in
    
-   g )  LOGs=${OPTARG} ;;
+   g )  LOGS=${OPTARG} ;;
    i )  GFF=${OPTARG} ;;
    o )  OUT_GFF=${OPTARG} ;;
    c )  CORRESP_GFF=${OPTARG};;
@@ -63,7 +64,7 @@ then
   CORRESP_GFF="data/annotations/corresp_gff.csv"
   bash corresp_contigs.sh -O "$OLD_REF" \
                           -N "$NEW_REF" \
-                          -G "$LOGS"
+                          -G "$LOGS" \
                           -c "$CORRESP_GFF" ${local:+-l}
 else if [ ! -f "$CORRESP_GFF" ];
   then
