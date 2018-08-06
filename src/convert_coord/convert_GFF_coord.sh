@@ -118,6 +118,8 @@ eval $run_fun <<CONV_COORD
       track=( \$line )
       # Getting line of corresp file for the contig on current line
       corresp=( \$(grep "^\${track[0]}" $CORRESP_GFF | sed 's/,/ /g') )
+      # If track is not on a chromosome (i.e. contig is not anchored), skip it
+      if [ -z "\$corresp" ]; then continue; fi
       # Replacing contig of current record in memory
       track[0]=\${corresp[1]}
       # Shift start and end if necessary and flip,
