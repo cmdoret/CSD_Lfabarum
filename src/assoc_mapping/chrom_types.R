@@ -7,7 +7,7 @@
 
 #==== SELECT PARAMETERS ====#
 wsize_range <- 30  # Size of the moving average window
-sp_range <- 0.60  # Proportion of SNPs to be included in each local regression
+sp_range <- 0.40  # Proportion of SNPs to be included in each local regression
 # wsize_range <- seq(5, 40, 1)
 # sp_range <- seq(0.15, 1, 0.01)
 
