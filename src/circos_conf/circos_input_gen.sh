@@ -52,7 +52,7 @@ tail -n +2 $tig |
 while read line
 do
   # is the p-value significant ?
-  pval=$(echo $line | awk '{print $NF}' | sed 's/[eE]+\{0,1\}/*10^/g')
+  pval=$(echo $line | awk '{print $13}' | sed 's/[eE]+\{0,1\}/*10^/g')
   if (( $(echo "$pval  > $sigpow" | bc -l) ))
   then
     awk -v chrom="$(cut -d$' ' -f2 <(echo $line))" \
