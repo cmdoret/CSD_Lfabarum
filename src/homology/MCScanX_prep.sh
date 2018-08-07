@@ -118,7 +118,9 @@ eval $run_fun "blastn -query $OUT_SEQ \
 # Renaming chromosomes according to MCScanX conventions
 MC_IN="$OUT_F/MCScanX_in"
 sed 's/^chr\([0-9]*\)/lf\1/' "$OUT_GFF" > "$MC_IN.gff"
-sed 's/chr\([0-9]*\)/lf\1/g' "$OUT_SEQ.blast" > "$MC_IN.blast"
+sed 's/chr\([0-9]*\)/lf\1/g' "$OUT_SEQ.blast" \
+    | sed 's/::[^	]*//g' > "$MC_IN.blast"
+
 
 echo "All input files are ready:"
 echo "  - BLAST output: $MC_IN.blast"
