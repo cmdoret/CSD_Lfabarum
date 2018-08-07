@@ -90,7 +90,7 @@ ggplot(data=assoc_snp, aes(x=cM, y=fisher)) +
 dev.off()
 
 ### Fig. S4: Centromeres location
-wsize_range <- 50
+wsize_range <- 30
 sp_range <- 0.40
 
 fix <- fix0[fix0$N.Samples>0,]
