@@ -33,20 +33,21 @@ parser.add_argument('pop_files', type=str,
                                  populations output files. Used as input')
 parser.add_argument('out', type=str,
                     help='Folder where output will be written')
+parser.add_argument('grouped_input', type=str,
+                    help='If all families were grouped into a \
+                                 single populations run, set to "T", \
+                                 otherwise set to "F"')
 parser.add_argument('--keep_all', action='store_true',
                     help='Keep all SNPs, even if missing or\
                                  homozygous in the mother.')
 parser.add_argument('--pool_output', action='store_true',
                     help='Pool output instead of computing \
                                  proportions per family')
-parser.add_argument('--sample_list', type=str,
-                    help='File containing the list of samples with family, \
-                    name, sex and generation information. Defaults to \
-                    "data/individuals.tsv".', default='data/individuals.tsv')
 
 args = parser.parse_args()
 
 # ========== DEFINING FUNCTIONS ==========#
+sum_file = "../../data/populations/fam_d-20_r-80/A/batch_0.sumstats.tsv"
 
 
 def unify_genomic(pop_path, pop):
@@ -111,6 +112,8 @@ def gen_decode(encoded):
     This function decodes numeric genotypes and
     replaces it with E (heterozygous), O (homozygous)
     or M (missing).
+    :param encoded: pandas dataframe, respecting the genomics output structure
+    from STACKS populations module, only the genotype columns must be included.
     :returns: A dataframe containing the genotype letters.
     """
 
@@ -122,7 +125,7 @@ def gen_decode(encoded):
         # Heterozygous genotypes are all others (except 0)
         # Building dictionary for numeric genotype translation
         if code in [1, 5, 8, 10]:  # Homozygous codes
-            genodict[code] = 'O'
+            genodict[code] = ''.join(['O',str(code)])
         elif code == 0:  # Missing
             genodict[code] = 'M'
         else:
@@ -153,8 +156,18 @@ def mother_hom(geno, pop):
         fam_SNP = np.where(geno.loc[:, mother_name] != 'E')[0]
         if not mother_name:  # If the mother is not available
             # Use sites where no individual in the fam is heterozygous instead
-            fam_SNP = np.where(np.all(geno[fam.Name.tolist()].isin(['O', 'M']),
-                               axis=1))[0]
+            fam_df = pd.DataFrame(geno[fam.Name.tolist()].T)
+            # Count number of diff genotypes among offspring (E, M, O1, O2)
+            fam_SNP = fam_df.apply(lambda x: len(x.unique()))
+            # If at least one offspring is het: SNP used automatically
+            fam_SNP += (fam_df == "E").sum() * 3
+            # If missing among genotypes, decrease number by one for the SNP
+            fam_SNP -= (fam_df == 'M').any()
+
+            # Include SNP if number of genotypes > 1 (het = auto include)
+            fam_SNP = fam_SNP[fam_SNP < 2].index.tolist()
+            # fam_SNP = np.where(np.all(geno[fam.Name.tolist()].isin(['O', 'M']),
+            #                   axis=1))[0]
         # Change those sites to M in all indv with same family
         geno.loc[fam_SNP, fam.Name] = 'M'
         # If using pandas <0.19, the above line will fail. The loop below can
@@ -185,6 +198,10 @@ def prop_hom(pop, geno):
     # Get sample names by sex
     sex_id = {'M': pop.Name[pop.Sex == 'M'],
               'F': pop.Name[pop.Sex == 'F']}
+
+    # Un-specify the genotype of homozygous individuals (to comptabilise recomb)
+    geno = geno.replace(['O1','O5','O8', 'O10'], "O")
+    print(geno.iloc[1:50,])
     # Counting how many individuals are used to compute proportion at each SNP
     sample_size = {}  # Number of individuals in which each site is found
     hom = {}  # proportion of individuals in which each site is homozygous
@@ -267,52 +284,61 @@ def parallel_func(f, df, f_args=[], chunk_size=1000):
 
 # ========== LOADING AND PROCESSING DATA ==========#
 # Path to STACKS populations folder and output file
+# in_path = "data/populations/grouped_d-5_r-80/"
 
 
 in_path = args.pop_files
-out_prefix = 'grouped_'
+out_prefix = 'grouped_' if args.grouped_input == "T" else "fam_"
 if args.pool_output:
     out_prefix += "outpool_"
 if args.keep_all:
     out_prefix += "keep_"
 out_path = path.join(args.out, (out_prefix + "prophom.tsv"))
-indv_path = args.sample_list  # family and sex information
+indv_path = "data/individuals.tsv"  # family and sex information
 indv = pd.read_csv(indv_path, sep='\t')  # Family and sex info
 # Preparing data structure to match sample names and families with columns
 
+if args.grouped_input == 'T':  # Single populations folder
+    try:
+        # Names in correct order
+        samples = pd.read_csv(path.join(in_path, "batch_1.sumstats.tsv"),
+                              sep='\t', nrows=2, header=None)
 
-try:
-    # Names in correct order
-    samples = pd.read_csv(path.join(in_path, "batch_1.sumstats.tsv"),
-                          sep='\t', nrows=2, header=None)
+        # Concatenating populations
+        names = samples.iloc[:, 1][0].split(',') + \
+            samples.iloc[:, 1][1].split(',')
+    except pd.errors.ParserError:
+        # In case only 1 sex is present
+        samples = pd.read_csv(path.join(in_path, "batch_1.sumstats.tsv"),
+                              sep='\t', nrows=1, header=None)
 
-    # Concatenating populations
-    names = samples.iloc[:, 1][0].split(',') + \
-        samples.iloc[:, 1][1].split(',')
-except pd.errors.ParserError:
-    # In case only 1 sex is present
-    samples = pd.read_csv(path.join(in_path, "batch_1.sumstats.tsv"),
-                          sep='\t', nrows=1, header=None)
+        # Concatenating populations
+        names = samples.iloc[:, 1][0].split(',')
 
-    # Concatenating populations
-    names = samples.iloc[:, 1][0].split(',')
-
-names = pd.DataFrame({'Name': names})
-# Adding family and sex, keeping order
-pop = names.merge(indv, on='Name', how='left')
-genomic = pd.read_csv(path.join(in_path, "batch_1.genomic.tsv"),
-                      sep='\t', header=None, skiprows=1)
-# select only samples cols and reindex from 0
-gen_indv = genomic.iloc[:, 3:].T.reset_index(drop=True).T
-# Replacing numeric header with corresponding sample name
-gen_indv.rename(columns=lambda x: pop.Name[x], inplace=True)
-print("Processing {0} sites across {1} samples.".format(gen_indv.shape[0],
-                                                        gen_indv.shape[1]))
+    names = pd.DataFrame({'Name': names})
+    # Adding family and sex, keeping order
+    pop = names.merge(indv, on='Name', how='left')
+    genomic = pd.read_csv(path.join(in_path, "batch_1.genomic.tsv"),
+                          sep='\t', header=None, skiprows=1)
+    # select only samples cols and reindex from 0
+    gen_indv = genomic.iloc[:, 3:].T.reset_index(drop=True).T
+    # Replacing numeric header with corresponding sample name
+    gen_indv.rename(columns=lambda x: pop.Name[x], inplace=True)
+    print("Processing {0} sites across {1} samples.".format(gen_indv.shape[0],
+                                                            gen_indv.shape[1]))
+else:  # One populations folder per family
+    pop = indv
+    genomic = unify_genomic(in_path, pop)
+    pop.drop(pop.index[~pop.Name.isin(genomic.columns.values[3:])],
+             axis=0, inplace=True)
+    pop = pop.reset_index(drop=True)
+    gen_indv = genomic.iloc[:, 3:]
 print("files loaded")
 
 # ========== RUNNING CODE ==========#
 # Decoding numeric genotypes into states (het, hom, missing)
 state = parallel_func(gen_decode, gen_indv)
+
 print("genotypes decoded")
 # Will run unless user explicitly set the --keep_all parameter
 if not args.keep_all:
@@ -329,11 +355,13 @@ print("homozygosity stats calculated")
 # ========== SAVING OUTPUT ==========#
 # Merging Chromosomal positions with proportion of homozygosity into 1 df
 prop = genomic.iloc[:, 0: 3].merge(prop, left_index=True, right_index=True)
+
 state = genomic.iloc[:, 0: 3].merge(state, left_index=True, right_index=True)
 prop.rename(columns={0: "Locus.ID", 1: "Chr", 2: "BP"}, inplace=True)
 state.rename(columns={0: "Locus.ID", 1: "Chr", 2: "BP"}, inplace=True)
 state_path = path.join(args.out,
                        (out_prefix.replace("outpool_", "") + "geno_EOM.tsv"))
+state = state.replace(['O1','O5','O8', 'O10'], "O")
 state.to_csv(state_path, sep='\t', index=False, na_rep='NA')
 prop.to_csv(out_path, sep='\t', index=False, na_rep='NA')
 print("Output saved to {0}".format(out_path))
