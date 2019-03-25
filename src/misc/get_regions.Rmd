@@ -1,0 +1,211 @@
+---
+title: "Number of genes in CSD regions"
+author: "Cyril Matthey-Doret"
+date: "March 21, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse); library(reshape2); library(kableExtra)
+library(gridExtra); library(ggforce); library(GenomicRanges)
+library(GO.db)
+setwd('../../data/')
+annot <- read_tsv("annotations/ord_simple_gene_chrom.bed", col_names = F)
+hits <- read_tsv("assoc_mapping/case_control_hits.tsv")
+snps <- read_tsv("assoc_mapping/case_control_all.tsv")
+tigs <- read_tsv("ref_genome/ordered_genome/karyotype.txt", col_names = F)
+go_terms <- read_tsv("annotations/blast2go.txt", col_names = c("ID", "GO", "function"))
+regions <- tibble(chr =hits %>% pull(Chr), 
+                  start = rep(0, nrow(hits)), 
+                  end = rep(0, nrow(hits)))
+go_terms <- go_terms %>% mutate(ID = str_replace(ID, "-PA", ""))
+```
+
+## Regions definition
+Here, CSD regions are defined as the regions surrounding significant SNPs until a non-significant SNP is encountered. Low SNP density will likely cause an overestimation of region sizes, but this is the most objective definition with available data. There are `r nrow(hits)` significant SNPs out of `r nrow(snps)` in total, and a total of `r nrow(annot)` annotations found on the `r round(sum(tigs$X2)/1000000, 1)`Mb of anchored genome.
+
+This generates multiple identical (overlapping) regions for consecutive significant SNPs ( 1/SNP) and directly adjacent regions in case there a single non-significant SNP between two significant ones (Figure 2). Overlapping and directly adjacent intervals are merged.
+
+## Annotations
+The number of annotated genes (i.e. not included isoforms or other features) contained in each (non-overlapping, non-adjacent) region is shown in table 1. The density of annotations is highly variable between regions (Figure 3). In total, there are 381 annotated genes among all 6 regions.
+
+## GO terms
+Performing a functional enrichment test reveals nothing interesting; the predicted functions of genes in CSD regions are too diverse to compute an enrichment for one particular term (Table 2).
+
+
+```{r define_regions, include=T, echo=F}
+for (row in 1:nrow(hits)){
+  chr_r <- pull(hits[row, "Chr"])
+  pos_r <- pull(hits[row, "BP"])
+  rel <- snps %>%
+    filter(Chr == chr_r & fisher < 5) %>%
+    mutate(dist = BP - pos_r)
+  if(pos_r <= min(rel %>% pull(BP))){
+    start_r <- 0
+  }
+  else{
+    start_r <- rel %>%
+      filter(dist < 0) %>%
+      filter(dist == max(dist)) %>%
+      dplyr::select(BP) %>%
+      pull
+  }
+  if(pos_r >= max(rel %>% pull(BP))){
+    end_r = tigs %>% filter(X1 == chr_r) %>% pull(X2)
+  }
+  else{
+    end_r <- rel %>%
+      filter(dist > 0) %>%
+      filter(dist == min(dist)) %>%
+      dplyr::select(BP) %>%
+      pull
+
+  }
+  regions[row,"start"] <- start_r
+  regions[row,"end"] <- end_r
+
+}
+
+```
+
+
+
+```{r viz_regions, include=T, echo=F, message=F, warning=F, fig.height=2, fig.cap="Visual representation of genomic ranges for each region. Each blue interval represent the span of a region. Regions are dodged vertically to show overlap and are separated in different panels by chromosomes."}
+# Visualise regions sizes and overlap
+ggplot(data=regions) + 
+  geom_linerange(aes(x=1, ymin=start/1000000, ymax=end/1000000), 
+                 position=position_dodge2(0.6), 
+                 lwd=2, col="blue") + 
+  facet_grid(~chr, scales="free_x") + 
+  xlim(c(0.5,1.5)) + 
+  theme_bw() +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) + 
+  scale_x_continuous(breaks=NULL) +
+  xlab("") + ylab("Position [Mb]") +
+  coord_flip()
+```
+
+```{r merge_regions, include=T, echo=F, error=F}
+# Merge overlapping regions
+# 1. Define an "overlap group" variable (g) as a
+# 2. Summarise each overlap group by smallest start and largest end
+regions <- regions %>% 
+  arrange(start) %>% 
+  group_by(chr, g = cumsum(cummax(lag(end, default = dplyr::first(end))) < start)) %>%
+  summarise(start = dplyr::first(start), end = max(end)) %>%
+  dplyr::select(-g)
+
+regions$index=rownames(regions)
+# Add length of regions
+regions$length_bp <- regions$end - regions$start
+regions$n_genes <- rep(0)
+for (row in 1:nrow(regions)){
+  chr_r <- pull(regions[row, "chr"])
+  start_r <- pull(regions[row, "start"])
+  end_r <- pull(regions[row, "end"])
+  ngenes_r <- annot %>%
+    filter(X1 == chr_r & (X3 >= start_r & X2 <= end_r)) %>%
+    nrow
+  regions[row, "n_genes"] <- ngenes_r
+}
+
+regions %>%
+  dplyr::select(-index) %>%
+  mutate(length_bp = format(length_bp, digits = 3, scientific = T)) %>%
+  kable(caption = "Summary of the different CSD regions after merging overlapping or directly adjacent regions. Note the first region on chromosome 2 starts at 0 since the first SNP on the chromosome is significant") %>%
+  kable_styling(bootstrap_options = "striped", position="center")
+
+```
+
+
+```{r viz_merged, include=T, echo=F, message=F, fig.height=2, fig.cap="Visual representation of genomic ranges for each region after merging overlapping and adjacent regions. Each blue interval represent the span of a region. Regions are dodged vertically to show overlap and are separated in different panels by chromosomes."}
+
+# Visualise regions sizes and overlap
+ggplot(data=regions) + 
+  geom_linerange(aes(x=1, ymin=start/1000000, ymax=end/1000000), 
+                 position=position_dodge2(0.6), 
+                 lwd=2, col="blue") + 
+  facet_grid(~chr, scales="free_x") + 
+  xlim(c(0.5,1.5)) + 
+  theme_bw() +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) + 
+  scale_x_continuous(breaks=NULL) +
+  xlab("") + ylab("Position [Mb]") +
+  coord_flip()
+```
+
+```{r viz_annot, eval=T, echo=F, include=T, echo=F, fig.height=8, fig.cap="Top: Number of annotated features in each region compared to their size, in basepairs. Bottom: Density of annotations in each CSD region per megaase in each CSD regions. Colors represent chromosomes in both panels."}
+# Show quantity of annotations in each region
+n_annot <- ggplot(data=regions, aes(x=length_bp, y=n_genes, col=chr)) +
+  geom_point(size=3) +
+  xlab("Region size [bp]") +
+  ylab("Number of annotations") + 
+  theme_bw()
+annot_dens <- ggplot(data=regions, aes(y=n_genes/(length_bp/1000000), 
+                                       x=paste0(chr, ":", 
+                                                round((start+end)/(2*1000000)), 
+                                                "Mb"), 
+                                       fill=chr)) + 
+  xlab("") +
+  ylab("Gene density in CSD regions [annotation/Mb]") + 
+  theme_bw() +
+  geom_bar(stat = "identity") + 
+  coord_flip()
+
+grid.arrange(n_annot, annot_dens, nrow=2)
+```
+
+
+
+```{r go_terms, echo=F}
+go_coords <- go_terms %>%
+  right_join(annot, by=c("ID" = "X4")) %>%
+  dplyr::rename(chr = X1, start = X2, end = X3)
+
+go_ranges <- makeGRangesFromDataFrame(go_coords)
+csd_ranges <- makeGRangesFromDataFrame(regions)
+csd_go_inter <- GenomicRanges::findOverlaps(go_ranges, csd_ranges)
+
+go_hits <- queryHits(csd_go_inter)
+csd_hits <- subjectHits(csd_go_inter)
+csd_go <- bind_cols(go_coords[go_hits,], regions[csd_hits,])
+csd_go <- csd_go %>%
+  dplyr::select(-chr1, -start1, -end1, -n_genes, -length_bp) %>%
+  dplyr::rename(region = index)
+
+# Store each gene only once (not once for each GO term)
+csd_genes <- csd_go %>% 
+  dplyr::select(-GO) %>% 
+  dplyr::distinct_all()
+
+```
+
+```{r enrich_annot, echo=F}
+
+genome_go_freq <- go_coords %>% 
+  count(GO) %>%
+  arrange(-n)
+
+csd_go_freq <- csd_go %>%
+  count(GO) %>%
+  arrange(-n)
+
+annot_counts <- merge(csd_go_freq, genome_go_freq, by="GO", suffixes=c("_csd", "_genome"))
+annot_counts <- annot_counts %>% mutate(tot_genome=sum(n_genome),
+                        tot_csd=sum(n_csd))
+
+annot_counts$pval <- p.adjust(
+  apply(annot_counts, 1, function(x) fisher.test(matrix(as.numeric(x[c(2, 5, 3, 4)]), ncol = 2))$p.value),
+  method="BH"
+)
+top10 <- annot_counts %>% 
+  arrange(pval) %>% 
+  dplyr::rename(`q-value` = pval) %>%
+  dplyr::select(-tot_genome, -tot_csd) %>%
+  head(10)
+top10$term = unname(Term(top10$GO))
+  
+top10 %>%
+  kable(caption = "Top 10 most significantly enriched GO terms in CSD regions") %>%
+  kable_styling(bootstrap_options = "striped", position="left", font_size = 8)
+```
