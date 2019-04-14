@@ -1,4 +1,5 @@
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488603.svg)](https://doi.org/10.5281/zenodo.1488603)
 # Genetic basis of sex determination in a parasitoid wasp species
 
 ### Cyril Matthey-Doret, Casper Van der Kooi and Tanja Schwander
