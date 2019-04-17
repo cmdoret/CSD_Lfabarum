@@ -16,7 +16,7 @@ To run the pipeline with the data provided:
 1. Download or clone this repository.
 2. Download the data archive from zenodo at: [https://zenodo.org/record/1488603#.W-1V9KBReLw]
 3. Uncompress the downloaded file using ```tar xzvf 20181115_csd_data.tar.gz data``` and the resulting `data` folder to the root  of the repository. 
-3. Download the gzipped fastq files from BioProject [PRJNA505237](https://www.ncbi.nlm.nih.gov//bioproject/PRJNA505237), on SRA (not available yet).
+3. Download the gzipped fastq files from BioProject [PRJNA505237](https://www.ncbi.nlm.nih.gov//bioproject/PRJNA505237), on SRA.
 4. Move the RADseq files to `data/processed` and the WGS files to `data/wgs/raw/`.
 5. Run the  pipeline
     1. On a cluster with LSF:
