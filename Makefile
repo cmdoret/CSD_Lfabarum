@@ -160,6 +160,20 @@ wgs_wild : $(CORRESP) $(SIZES) $(WGS)/variant/hap.wild.matrix
 #### MISC RULES ####
 ####################
 
+# Automatically download data from the paper and places it in the correct folders to
+# run the analysis
+.PHONY download
+download: 
+	wget https://zenodo.org/record/1488603/files/20181115_csd_data.tar.gz
+	tar xzvf 20181115_csd_data.tar.gz
+	rm 20181115_csd_data.tar.gz
+	mkdir -p $(WGS)/raw
+	bash $(MISC)/sra_autodl.sh SRX5006708 SRX5006729 $(WGS)/raw
+	bash $(MISC)/sra_autodl.sh SRX5003361 SRX5003929 $(PROC)
+
+$(WGS)/raw/%.fastq:
+	wgs_prefix="SRX50067{08..29}"
+	mkdir -p $(WGS)/raw
 # Transform basepair positions for SNPs from the association mapping into 
 # centiMorgan.
 .PHONY: bp2cm
