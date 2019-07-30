@@ -128,8 +128,7 @@ def gen_decode(encoded):
         else:
             genodict[code] = 'E'  # All others are heterozygous
     # Rarely, rows are filled this value. I assume this is a STACKS issue.
-    decoded = encoded.apply(lambda r: np.array([genodict.get(i, 'M')
-                                                for i in r]), axis=1)
+    decoded = encoded.applymap(lambda r: genodict.get(r, 'M'))
     return decoded
 
 
@@ -204,7 +203,7 @@ def prop_hom(pop, geno):
         # Looping over sexes
         dff = {}
         for t in ['O', 'M', 'E']:
-            dff[t] = (geno.loc[:, sex_id[sex]] == t).T.sum().astype(float)
+            dff[t] = (geno.loc[:, sex_id[sex].values] == t).T.sum().astype(float)
         sample_size[sex] = dff['E']+dff['O']
         hom[sex] = np.divide(dff['O'], (dff['O'] + dff['E']))
 
@@ -275,6 +274,7 @@ def parallel_func(f, df, f_args=[], chunk_size=1000):
     result = pool.map(func, chunked_df)  # Mapping function to chunks.
     # Concatenating into single df. Order is preserved
     pool.terminate()
+
     return pd.concat(result)
 
 # ========== LOADING AND PROCESSING DATA ==========#
