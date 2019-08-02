@@ -9,7 +9,7 @@
 usage(){
 
     cat <<USAGE
-`basename $0` [OPTION]...
+$(basename "$0") [OPTION]...
 Compute cM/BP ratio between all markers in a linkage map and convert coordinates to an anchored assembly.
     -n, --new       path to the new (anchored) assembly fasta file.
     -r, --old_ref   path to the old (non-anchored) assembly fasta file.
@@ -33,6 +33,9 @@ case $key in
 esac
 done
 
+# Enforce english numerals in script to keep point decimal separator
+LC_NUMERIC=en_US.UTF-8
+
 # Check if any argument is missing
 if [ -z "$NREF" ];  then miss="New assembly"; fi
 if [ -z "$OREF" ];  then miss="Old assembly"; fi
@@ -40,7 +43,7 @@ if [ -z "$MARK" ];  then miss="Markers list"; fi
 if [ -z "$OUTF" ];  then miss="Output path";  fi
 
 # Signal missing argument, print help and exit
-if [ ! -z ${miss+x} ];then echo -e "\033[31;1m Error: \033[m $miss not provided."; usage; fi
+if [ -n "${miss+x}" ];then echo -e "\033[31;1m Error: \033[m $miss not provided."; usage; fi
 
 mkdir -p "$(dirname $OUTF)"
 # Compute coordinates of markers in new assembly and store correspondance list to file
@@ -51,7 +54,7 @@ if [ -z ${PRES+x} ] || [ ! -f "$OUTF.corresp" ]; then
     # remove useless cols | make composite chr-bp field  |
     # join on composite field to add cM info
     python2 src/convert_coord/contig2chr.py "$OREF" "$NREF" \
-            --region_size 5000 --include_input < $MARK \
+            --region_size 5000 --include_input < "$MARK" \
         | cut -d ',' -f1-4 \
         | awk -v FS=',' -v OFS=',' '{print $1"-"$2,$0}' \
            | sort -t ',' -k1,1 \
@@ -85,11 +88,11 @@ awk 'BEGIN{FS="\t";OFS="\t"}
 
 prev=(0 0 0 0 0)
 rm -f "$OUTF.tsv"
-while read -a marker; do
+while read -ra marker; do
     # If still on same contig, compute bp/cM ratio between previous and current marker
-    if [ ${prev[0]} == ${marker[0]} ] || [ ${prev[0]} == 0 ]; then
+    if [ "${prev[0]}" == "${marker[0]}" ] || [ "${prev[0]}" == 0 ]; then
         cM=$(echo "${marker[2]} - ${prev[2]}" | bc -l)
-        bp=$(( ${marker[4]} - ${prev[4]} ))
+        bp=$(( "${marker[4]}" - "${prev[4]}" ))
         #echo "${marker[@]}"
         ratio=$(echo "$cM / $bp"  | bc -l | xargs printf "%.10f\n")
         # Ignore SNP if BP order is wrong (i.e. diminishing cM) or unreasonably high ratio.
@@ -101,7 +104,7 @@ while read -a marker; do
 
     else
         # if still on same chromosome, use mean chrom. ratio to estimate inter-contig ratio
-        if [ ${marker[3]} == ${prev[3]} ]; then
+        if [ "${marker[3]}" == "${prev[3]}" ]; then
             ratio=$(grep "${marker[3]}" "$OUTF.cMean" | cut -f2)
         else
             # New chromosome. No need to subtract (previous is 0)
@@ -110,8 +113,8 @@ while read -a marker; do
         fi
     fi
     # send chromosome, interval between previous and current markers in BP, and cM/BP ratio in interval
-    echo -e "${marker[3]}\t$((${prev[4]}+1))\t${marker[4]}\t$ratio" >> "$OUTF.tsv"
-    prev=(${marker[@]})
+    echo -e "${marker[3]}\t$((prev[4]+1))\t${marker[4]}\t$ratio" >> "$OUTF.tsv"
+    prev=("${marker[@]}")
 
 # TODO: Eliminate markers higher than a threshold (cM/BP > 1 maybe ?)
 done < "$OUTF.corresp"
