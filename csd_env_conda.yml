@@ -1,0 +1,29 @@
+name: csd_env
+channels:
+  - r
+  - defaults
+  - bioconda
+dependencies:
+  - bwa
+  - samtools
+  - stacks
+  - trimmomatic
+  - vcftools
+  - python=2.7
+  - biopython
+  - numpy
+  - pandas
+  - pybedtools
+  - pysam
+  - r-base=3.4.3
+  - r-gridextra
+  - r-lattice
+  - r-rcolorbrewer
+  - r-rcpp
+  - r-rcpproll
+  - r-reshape2
+  - r-scales
+  - r-tidyverse
+  - r-viridis
+  - r-viridislite
+  - r-zoo
