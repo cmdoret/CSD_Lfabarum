@@ -4,7 +4,9 @@ channels:
   - defaults
   - bioconda
 dependencies:
+  - blast
   - bwa
+  - circos
   - samtools
   - stacks
   - trimmomatic
@@ -15,7 +17,7 @@ dependencies:
   - pandas
   - pybedtools
   - pysam
-  - r-base=3.4.3
+  - r-base=3.6.0
   - r-gridextra
   - r-lattice
   - r-rcolorbrewer
