@@ -103,9 +103,9 @@ trimR=\$(echo \$reverse | sed 's%/\([^/]*\)$%/trim.\1%')
 trimFU=\$(echo \$trimF | sed 's/R1.fastq.gz$/R1U.fastq.gz/')
 trimRU=\$(echo \$trimR | sed 's/R2.fastq.gz$/R2U.fastq.gz/')
 
-# Trim low quality ends
+# Trim low quality ends 
 trimmomatic PE \$forward \$reverse \$trimF \$trimFU \$trimR \$trimRU \
-            -trimlog ${logs}/${sample}-trim.log \
+            -trimlog ${logs}/${sample}-trim.log -threads $threads \
             LEADING:20 TRAILING:20
 
 # Mapping paired ends reads

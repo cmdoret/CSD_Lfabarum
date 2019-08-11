@@ -78,7 +78,7 @@ odds_chrom$effect_str <- odds_chrom$Me/(odds_chrom$Mo+odds_chrom$Me)
 odds_chrom$effect_str[odds_chrom$effect_str>0.5] <- 0.5
 
 # Saving manhattan plot to pdf
-pdf(paste0(out_folder, "/../plots/","case_control_hits.pdf"), width=12, height=12)
+pdf(paste0(out_folder, "/../plots/","case_control_hits.pdf"), width=10, height=8)
 ggplot(data=odds_chrom, aes(x=BP/1000000, y=fisher)) + 
   geom_point(aes(col=effect_str), size = 2) + 
   facet_grid(~Chr, space='free_x', scales = 'free_x') +  
