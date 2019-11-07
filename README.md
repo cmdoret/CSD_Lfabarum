@@ -1,11 +1,10 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488603.svg)](https://doi.org/10.5281/zenodo.1488603)
 # Genetic basis of sex determination in a parasitoid wasp species
-
-### Cyril Matthey-Doret, Casper Van der Kooi and Tanja Schwander
+**This pipeline is part of the publication: [Matthey-Doret et al., 2019, Genome Biology and evolution, doi: 10.1093/gbe/evz219](https://academic.oup.com/gbe/article/11/10/2954/5584199)**
 
 ---
-In this project, we use restriction-site associated DNA-sequencing (RAD-seq) and build a custom pipeline to locate and identify the complementary sex determination (CSD) locus/loci in the parasitoid wasp species _Lysiphlebus fabarum_. This repository contains a pipeline to map the reads using BWA and build loci using the different components of STACKS with optimal parameters. It was designed to run on a distributed High Performance Computing (HPC) environment with LSF but can also be ran on a personal machine.
+In this project, we use restriction-site associated DNA-sequencing (RAD-seq) and build a custom pipeline with the aim to locate and identify the complementary sex determination (CSD) locus/loci in the parasitoid wasp species _Lysiphlebus fabarum_. This repository contains a pipeline to map the reads using BWA and build loci using the different components of STACKS with optimal parameters and perform downstream analyses. It was designed to run on a distributed High Performance Computing (HPC) environment with LSF but can also be ran on a personal machine.
 
 ## Instructions:
 
